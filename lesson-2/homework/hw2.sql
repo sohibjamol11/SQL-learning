@@ -1,103 +1,113 @@
-create database homework2
-use homework2
-CREATE TABLE Employees (
-    EmpID INT,
-    Name VARCHAR(50),
-    Salary DECIMAL(10, 2)
-);
-INSERT INTO Employees (EmpID, Name, Salary)
-VALUES 
-    (1, 'Ciera Watson', 58000.00),
-    (2, 'David Patrson', 91000.00),
-	(3,'Endrew Adam', 88000.00);
-	UPDATE Employees
-SET Salary = 7000.00
-WHERE EmpID = 1;
-DELETE FROM Employees
-WHERE EmpID = 2;
---DELETE
---Removes specific rows from a table based on a WHERE clause.
+1.
+create table Employees (EmpID int, name varchar(50), salary decimal(10,2));
 
---Can be rolled back (if within a transaction).
+2.
+insert into Employees values (1,'John', 1000.50);
+insert into Employees values (2,'Alex', 800.90), (3,'Sara',990.75);
 
---Triggers can be fired.
+3.
+update Employees 
+set salary = 7000
+where EmpID = 1;
 
---Syntax: DELETE FROM table_name WHERE condition;
+4.
+delete from Employees
+where EmpID = 2;
 
---TRUNCATE
---Removes all rows from a table quickly and without logging each row.
+5.
+Think of it like cleaning up your bookshelf:
+DELETE: This is like carefully taking out specific books you no longer want. You can choose which books to remove based on certain criteria. The bookshelf itself and the other books remain untouched. Importantly, the record of which books were there before is often kept in the background (in the transaction log).
+TRUNCATE: Imagine sweeping all the books off the shelf in one go. The bookshelf remains, but all the books are gone instantly. There is generally no record kept of the individual books that were removed. It is a much faster way to empty the shelf completely.
+DROP: This is like getting rid of the entire bookshelf itself. Not only are all the books gone, but the shelf structure is also removed. You cannot put any new books there until you bring in a new bookshelf. Similarly, the entire table and its definition are removed from the database.
 
---Cannot delete specific rows.
 
---Cannot be rolled back in some databases.
+6. 
+alter table Employees
+alter column name varchar(100);
 
---Resets identity columns.
+7.
+alter table Employees
+add Department varchar(50);
 
---Syntax: TRUNCATE TABLE table_name;
+8.
+alter table Employees
+alter column salary float;
 
---DROP
---Completely removes a table (or other database object) from the database.
-
---Deletes table structure and data.
-
---Cannot be rolled back.
-
---Syntax: DROP TABLE table_name;
-ALTER TABLE Employees
-ALTER COLUMN Name VARCHAR(100);
-ALTER TABLE Employees
-ALTER COLUMN Salary FLOAT;
+9.
 CREATE TABLE Departments (
     DepartmentID INT PRIMARY KEY,
     DepartmentName VARCHAR(50)
 );
- TRUNCATE TABLE Employees;
- CREATE TABLE Departments (
-    DepartmentID INT,
-    DepartmentName VARCHAR(50));
-ALTER TABLE Departments
-ADD Salary FLOAT;
-INSERT INTO Departments (DepartmentID, DepartmentName, Salary)
-VALUES
-(1, 'Human Resources', 8800),
-(2, 'Finance', 6000),
-(3, 'Engineering', 4000),
-(4, 'Management', 5000),
-(5, 'IT Support', 10000);
-UPDATE Departments
-SET DepartmentName ='Management'
-WHERE Salary>8000;
-DELETE FROM Employees;
 
-ALTER TABLE Employees
-DROP COLUMN Department;
+10.
+TRUNCATE TABLE Employees;
+
+11.
+INSERT INTO Departments (DepartmentID, DepartmentName)
+SELECT 1, 'Sales' UNION ALL
+SELECT 2, 'Marketing' UNION ALL
+SELECT 3, 'Engineering' UNION ALL
+SELECT 4, 'Human Resources' UNION ALL
+SELECT 5, 'Finance';
+
+12.
+update Employees 
+set Department = 'Management'
+where salary > 5000;
+
+13.
+DELETE FROM StaffMembers;
+
+14.
+alter table Employees
+drop column Department;
+
+15.
 EXEC sp_rename 'Employees', 'StaffMembers';
+
+16.
 DROP TABLE Departments;
+
+17,18.
 CREATE TABLE Products (
     ProductID INT PRIMARY KEY,
-    ProductName VARCHAR(100),
-    Category VARCHAR(50),
+    ProductName VARCHAR(200),
+    Category VARCHAR(100),   
     Price DECIMAL(10, 2),
-    StockQuantity INT
+    CHECK (Price > 0)
 );
-ALTER TABLE Products
-ADD CONSTRAINT chk_price_positive
-CHECK (Price > 0);
+
+19.
 ALTER TABLE Products
 ADD StockQuantity INT DEFAULT 50;
-EXEC sp_rename 'Products.Category', 'ProductCategory';
-INSERT INTO Products (ProductID, ProductName, ProductCategory, Price, StockQuantity)
-VALUES (1, 'Wireless Mouse', 'Electronics', 25.99, 100),
- (2, 'Notebook', 'Stationery', 3.50, 200)
- (3, 'Water Bottle', 'Kitchen', 12.00, 75)
- (4, 'Desk Lamp', 'Furniture', 45.25, 40),
- (5, 'Bluetooth Speaker', 'Electronics', 89.99, 60);
-SELECT*INTO Products_Backup
-FROM Products;
-EXEC sp_rename 'Products', 'Inventory';
+
+20.
+EXEC sp_rename 'Products.Category', 'ProductCategory', 'COLUMN';
+
+21.
+insert into Products (ProductID, ProductName, ProductCategory, Price, StockQuantity)
+values (1, 'Samsung', 'Technology', 100.5, 200),
+       (2, 'Creatine', 'Sport Nutrition', 150.5,30),
+       (3, 'Asus', 'Technology', 355.5,100),
+       (4, 'Apple', 'Food', 10.5,1000),
+       (5, 'IPhone', 'Technology', 150.5,100);
+
+22.
+select * into Products_Backup from Products;
+
+23.
+exec sp_rename 'Products', 'Inventory';
+
+24.
 ALTER TABLE Inventory
-ALTER COLUMN Price FLOAT;
+DROP CONSTRAINT CK_InventoryPrice;
+
+alter table Inventory
+alter column Price float;
+
+ALTER TABLE Inventory
+ADD CONSTRAINT CK_InventoryPrice CHECK (Price > 0);
+
+25.
 ALTER TABLE Inventory
 ADD ProductCode INT IDENTITY(1000, 5);
-
-
